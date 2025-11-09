@@ -1,0 +1,55 @@
+{
+  id: 56,
+  nombre: "Xabi Alonso",
+  apodo: "El Maestro",
+  posicion: "MC",
+  nacionalidad: "🇪🇸 España",
+  equipos: ["Real Sociedad", "Liverpool", "Real Madrid", "Bayern"],
+  mundiales: 1,
+  logro: "Mundial 2010 - Pases perfectos",
+  rareza: "comun",
+  imagen: "/cromos/xabialonso.png"
+},
+```
+
+---
+
+## 🎨 **GUÍA DE RAREZA (para decidir qué jugador va donde):**
+
+### **👑 LEGENDARIA (5%)** - Solo los mejores de la historia
+- Pelé, Maradona, Cruyff, Di Stéfano, Beckenbauer
+- Criterio: 3+ Balones de Oro O 2+ Mundiales O revolucionaron el fútbol
+
+### **💎 ÉPICA (15%)** - Leyendas absolutas
+- Zidane, Ronaldo, Ronaldinho, Maldini, Van Basten
+- Criterio: 1 Balón de Oro O 1 Mundial + carrera destacada O 3+ Champions
+
+### **⚡ RARA (30%)** - Estrellas de su época
+- Rivaldo, Roberto Carlos, Aimar, Nedved, Pirlo
+- Criterio: Regularidad alta en clubes top O subcampeonatos importantes
+
+### **⚪ COMÚN (50%)** - Grandes jugadores
+- Iniesta, Puyol, Lampard, Gerrard, Drogba
+- Criterio: Carrera sólida en clubes importantes O participación en grandes logros
+
+---
+
+## 📂 **PREPARAR IMÁGENES:**
+
+### **Opción 1: Usar placeholders (mientras consigues imágenes)**
+- El código ya maneja imágenes faltantes
+- Muestra un placeholder con nombre y emoji de rareza
+
+### **Opción 2: Añadir tus imágenes**
+1. Guarda las imágenes en `public/cromos/`
+2. Formato recomendado: `nombreapellido.png` (sin espacios, todo minúsculas)
+3. Tamaño ideal: 300x450px (ratio 2:3)
+4. Peso: Menos de 200KB cada una
+
+**Ejemplo:**
+```
+public/
+  cromos/
+    xabialonso.png
+    torres.png
+    villa.png
