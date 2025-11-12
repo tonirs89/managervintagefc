@@ -24,7 +24,7 @@ export const JUGADORES = [
     mundiales: 3,
     logro: "3 Mundiales (1958, 1962, 1970)",
     rareza: "legendaria",
-    imagen: "/cromos/pele.png"
+    imagen: "/cromos/pele.PNG"
   },
   {
     id: 2,
@@ -60,7 +60,7 @@ export const JUGADORES = [
     mundiales: 0,
     logro: "5 Copas de Europa",
     rareza: "legendaria",
-    imagen: "/cromos/distefano.png"
+    imagen: "/cromos/diestefano.PNG"
   },
   {
     id: 5,
@@ -100,7 +100,7 @@ export const JUGADORES = [
     mundiales: 2,
     logro: "2 Mundiales - 2 Balones de Oro",
     rareza: "epica",
-    imagen: "/cromos/ronaldo.png"
+    imagen: "/cromos/ronaldo.JPG"
   },
   {
     id: 8,
@@ -224,7 +224,7 @@ export const JUGADORES = [
     mundiales: 1,
     logro: "3 Champions",
     rareza: "rara",
-    imagen: "/cromos/robertocarlos.PNG"
+    imagen: "/cromos/robertocarlos.png"
   },
   {
     id: 18,
@@ -236,7 +236,7 @@ export const JUGADORES = [
     mundiales: 0,
     logro: "Magia y elegancia",
     rareza: "rara",
-    imagen: "/cromos/aimar.PNG"
+    imagen: "/cromos/aimar.png"
   },
   {
     id: 19,
@@ -248,7 +248,7 @@ export const JUGADORES = [
     mundiales: 0,
     logro: "Liga 2000",
     rareza: "rara",
-    imagen: "/cromos/djalminha.jpg"
+    imagen: "/cromos/djalminha.png"
   },
   {
     id: 20,
@@ -308,7 +308,7 @@ export const JUGADORES = [
     mundiales: 0,
     logro: "Balón de Oro 2004",
     rareza: "rara",
-    imagen: "/cromos/shevchenko.png"
+    imagen: "/cromos/shevchenko.jpg"
   },
   {
     id: 25,
@@ -320,7 +320,7 @@ export const JUGADORES = [
     mundiales: 0,
     logro: "Balón de Oro 2003",
     rareza: "rara",
-    imagen: "/cromos/nedved.png"
+    imagen: "/cromos/nedved.jpg"
   },
   {
     id: 26,
@@ -468,7 +468,7 @@ export const JUGADORES = [
     mundiales: 1,
     logro: "Balón de Oro 2007",
     rareza: "comun",
-    imagen: "/cromos/kaka.png"
+    imagen: "/cromos/kaka.jpg"
   },
   {
     id: 38,

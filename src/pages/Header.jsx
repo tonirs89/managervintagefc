@@ -1,15 +1,16 @@
 // src/pages/Header.jsx
 
-import { Package, Coins, Calendar } from "lucide-react";
+import { Package, Coins, Brain } from "lucide-react";
 import Logo from "../components/Logo";
 
 export default function Header({ usuario, onLogout, sobres, puntos, progreso, onQuizClick, puedeHacerQuiz }) {
   return (
     <header className="w-full bg-[#090702] shadow-lg fixed top-0 left-0 z-50 border-b-4 border-yellow-400">
-      <div className="flex items-center justify-between px-4 md:px-8 py-3 md:py-4 bg-[#090702]">
+      {/* CONTENEDOR RELATIVO PARA POSICIONAR EL LOGO ABSOLUTO */}
+      <div className="relative flex items-center justify-between px-4 md:px-8 py-3 md:py-4 bg-[#090702]">
         
         {/* IZQUIERDA: Sobres y Quiz */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 z-10">
           {/* Contador de sobres */}
           <div className="flex items-center gap-2 bg-gray-900 px-3 py-2 rounded-lg border-2 border-yellow-500 shadow-md">
             <Package className="text-yellow-400" size={20} />
@@ -17,31 +18,33 @@ export default function Header({ usuario, onLogout, sobres, puntos, progreso, on
           </div>
 
           {/* Botón Quiz Diario */}
-          <button
-            onClick={onQuizClick}
-            disabled={!puedeHacerQuiz}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg font-bold text-sm transition-all ${
-              puedeHacerQuiz
-                ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:scale-105 animate-pulse'
-                : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-            }`}
-            style={{ 
-              WebkitTapHighlightColor: 'transparent',
-              touchAction: 'manipulation'
-            }}
-          >
-            <Calendar size={18} />
-            <span className="hidden sm:inline">Quiz</span>
-          </button>
+<button
+  onClick={onQuizClick}
+  disabled={!puedeHacerQuiz}
+  className={`flex flex-col sm:flex-row items-center gap-2 sm:gap-2 px-2 py-3 rounded-lg font-bold text-xs sm:text-sm transition-all ${
+    puedeHacerQuiz
+      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:scale-105 animate-pulse shadow-lg'
+      : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+  }`}
+  style={{ 
+    WebkitTapHighlightColor: 'transparent',
+    touchAction: 'manipulation'
+  }}
+>
+  <Brain size={13} />
+  <span>Quiz</span>
+</button>
         </div>
 
-        {/* CENTRO: Logo */}
-        <div className="flex-1 flex justify-center">
-          <Logo className="w-32 md:w-48" />
+        {/* CENTRO: Logo - POSICIÓN ABSOLUTA PARA CENTRADO PERFECTO */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+          <div className="pointer-events-auto">
+            <Logo className="w-32 md:w-48" />
+          </div>
         </div>
 
         {/* DERECHA: Usuario y Puntos */}
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex flex-col items-end gap-2 z-10">
           {/* Contador de puntos */}
           <div className="flex items-center gap-2 bg-gray-900 px-3 py-1 rounded-lg border-2 border-yellow-500 shadow-md">
             <Coins className="text-yellow-400" size={18} />
