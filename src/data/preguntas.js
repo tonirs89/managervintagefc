@@ -557,7 +557,7 @@ export const PREGUNTAS_QUIZ = [
 // ========================================
 export const obtenerPreguntasAleatorias = () => {
   // Mezclar array de preguntas
-  const preguntasMezcladas = [...PREGUNTAS].sort(() => Math.random() - 0.5);
+  const preguntasMezcladas = [...PREGUNTAS_QUIZ].sort(() => Math.random() - 0.5);
   
   // Devolver las primeras 5
   return preguntasMezcladas.slice(0, 5);

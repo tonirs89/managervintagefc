@@ -11,6 +11,23 @@ export default function QuizModal({ preguntas, onComplete, onClose }) {
   const [mostrarResultado, setMostrarResultado] = useState(false);
   const [mostrarFinal, setMostrarFinal] = useState(false);
 
+  // Verificar que tenemos preguntas
+  if (!preguntas || preguntas.length === 0) {
+    return (
+      <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+        <div className="bg-gray-900 p-6 rounded-xl text-white text-center">
+          <p className="text-xl mb-4">Error al cargar preguntas</p>
+          <button
+            onClick={onClose}
+            className="bg-red-600 px-6 py-2 rounded-lg"
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const pregunta = preguntas[preguntaActual];
 
   // ============================================
@@ -20,8 +37,8 @@ export default function QuizModal({ preguntas, onComplete, onClose }) {
     setRespuestaSeleccionada(index);
     setMostrarResultado(true);
 
-    // Contar si es correcta
-    if (index === pregunta.correcta) {
+    // Contar si es correcta (CORREGIDO: usar respuestaCorrecta)
+    if (index === pregunta.respuestaCorrecta) {
       setCorrectas(correctas + 1);
     }
 
@@ -164,25 +181,21 @@ export default function QuizModal({ preguntas, onComplete, onClose }) {
 
         {/* Contenido */}
         <div className="p-6">
-          {/* Categoría */}
-          <div className="inline-block bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4">
-            {pregunta.categoria}
-          </div>
-
           {/* Pregunta */}
           <h3 className="text-white text-xl md:text-2xl font-bold mb-6 leading-tight">
             {pregunta.pregunta}
           </h3>
 
-          {/* Respuestas */}
+          {/* Respuestas (CORREGIDO: usar opciones) */}
           <div className="space-y-3">
-            {pregunta.respuestas.map((respuesta, index) => {
+            {pregunta.opciones.map((respuesta, index) => {
               let estilo = "bg-gray-700 hover:bg-gray-600 text-white";
 
               if (mostrarResultado) {
-                if (index === pregunta.correcta) {
+                // CORREGIDO: usar respuestaCorrecta
+                if (index === pregunta.respuestaCorrecta) {
                   estilo = "bg-green-600 text-white";
-                } else if (index === respuestaSeleccionada && index !== pregunta.correcta) {
+                } else if (index === respuestaSeleccionada && index !== pregunta.respuestaCorrecta) {
                   estilo = "bg-red-600 text-white";
                 } else {
                   estilo = "bg-gray-700 text-gray-400";
@@ -203,10 +216,10 @@ export default function QuizModal({ preguntas, onComplete, onClose }) {
                   }}
                 >
                   <span>{respuesta}</span>
-                  {mostrarResultado && index === pregunta.correcta && (
+                  {mostrarResultado && index === pregunta.respuestaCorrecta && (
                     <CheckCircle className="text-white" size={24} />
                   )}
-                  {mostrarResultado && index === respuestaSeleccionada && index !== pregunta.correcta && (
+                  {mostrarResultado && index === respuestaSeleccionada && index !== pregunta.respuestaCorrecta && (
                     <XCircle className="text-white" size={24} />
                   )}
                 </button>
