@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import CromoCard from "../components/CromoCard";
 import { JUGADORES, obtenerCromoAleatorio, PUNTOS_DUPLICADO, RAREZA_STYLES, obtenerEstadisticas } from "../data/jugadores";
 import { Package, Coins, Trophy, TrendingUp, Brain, X, ChevronLeft, ChevronRight } from "lucide-react";
+import SobreCerrado from '../components/SobreCerrado';
+
+import AbrirSobreAnimado from '../components/AbrirSobreAnimado';
 
 export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPuntos, onProgresoChange }) {
   // Estado de la colección: { jugadorId: cantidad }
@@ -16,6 +19,7 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
   const [cromoSeleccionado, setCromoSeleccionado] = useState(null);
   const [mostrarEstadisticas, setMostrarEstadisticas] = useState(false);
   const [vistaAmpliada, setVistaAmpliada] = useState(false); // NUEVO: para ver cromo en grande
+  const [mostrarAnimacion, setMostrarAnimacion] = useState(false);
 
   // ============================================
   // CARGAR PROGRESO DEL USUARIO (solo una vez)
@@ -73,40 +77,38 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
   // FUNCIÓN: ABRIR SOBRE
   // ============================================
   const abrirSobre = () => {
-    if (sobres <= 0) {
-      alert("❌ No tienes sobres disponibles. ¡Gana más completando el quiz diario o compra con puntos!");
-      return;
-    }
+  if (sobres <= 0) {
+    alert("❌ No tienes sobres disponibles...");
+    return;
+  }
 
-    setAbriendoSobre(true);
-    
-    setTimeout(() => {
-      // Obtener cromo aleatorio según probabilidades
-      const cromo = obtenerCromoAleatorio();
-      
-      // Actualizar colección
-      const nuevaColeccion = { ...coleccion };
-      const cantidadActual = nuevaColeccion[cromo.id] || 0;
-      nuevaColeccion[cromo.id] = cantidadActual + 1;
-      
-      // Si es duplicado, dar puntos
-      let puntosGanados = 0;
-      if (cantidadActual > 0) {
-        puntosGanados = PUNTOS_DUPLICADO[cromo.rareza];
-        setPuntos(puntos + puntosGanados);
-      }
-      
-      // Actualizar estados
-      setColeccion(nuevaColeccion);
-      setSobres(sobres - 1);
-      setCromoNuevo({ 
-        ...cromo, 
-        esDuplicado: cantidadActual > 0,
-        puntosGanados 
-      });
-      setAbriendoSobre(false);
-    }, 2000);
-  };
+  // Obtener cromo aleatorio
+  const cromo = obtenerCromoAleatorio();
+  
+  // Actualizar colección
+  const nuevaColeccion = { ...coleccion };
+  const cantidadActual = nuevaColeccion[cromo.id] || 0;
+  nuevaColeccion[cromo.id] = cantidadActual + 1;
+  
+  // Si es duplicado, dar puntos
+  let puntosGanados = 0;
+  if (cantidadActual > 0) {
+    puntosGanados = PUNTOS_DUPLICADO[cromo.rareza];
+    setPuntos(puntos + puntosGanados);
+  }
+  
+  // Actualizar estados
+  setColeccion(nuevaColeccion);
+  setSobres(sobres - 1);
+  setCromoNuevo({ 
+    ...cromo, 
+    esDuplicado: cantidadActual > 0,
+    puntosGanados 
+  });
+  
+  // MOSTRAR ANIMACIÓN en lugar de setAbriendoSobre
+  setMostrarAnimacion(true);
+};
 
   // ============================================
   // FUNCIÓN: COMPRAR SOBRE CON PUNTOS
@@ -245,139 +247,23 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
         ))}
       </div>
 
-      {/* MODAL: CROMO NUEVO (después de abrir sobre) */}
-      {cromoNuevo && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/90 z-50 p-4">
-          <div className="bg-gradient-to-b from-gray-900 to-black rounded-2xl max-w-md w-full border-4 border-yellow-500 shadow-2xl overflow-hidden">
-            {/* Header según si es duplicado */}
-            <div className={`${cromoNuevo.esDuplicado ? 'bg-red-600' : 'bg-green-600'} p-4 text-center`}>
-              <p className="text-white font-bold text-2xl">
-                {cromoNuevo.esDuplicado ? '🔁 ¡DUPLICADO!' : '✨ ¡NUEVO!'}
-              </p>
-              {cromoNuevo.esDuplicado && (
-                <p className="text-yellow-300 text-lg font-semibold mt-1">
-                  +{cromoNuevo.puntosGanados} puntos 💰
-                </p>
-              )}
-            </div>
+              {/* REEMPLAZAR el modal de "CROMO NUEVO" por esto: */}
 
-            {/* Imagen del cromo */}
-            <div className="p-6 text-center">
-              <div className="mb-4">
-                <div className={`inline-block ${RAREZA_STYLES[cromoNuevo.rareza].bg} text-white text-sm font-bold px-4 py-2 rounded-full`}>
-                  {RAREZA_STYLES[cromoNuevo.rareza].emoji} {RAREZA_STYLES[cromoNuevo.rareza].nombre}
-                </div>
-              </div>
-              
-              <h2 className={`text-3xl font-bold ${RAREZA_STYLES[cromoNuevo.rareza].color} mb-2`}>
-                {cromoNuevo.nombre}
-              </h2>
-              <p className="text-xl text-gray-300 mb-4">{cromoNuevo.apodo}</p>
-              
-              <div className="bg-gray-800 p-4 rounded-lg mb-4">
-                <p className="text-gray-400 text-sm mb-1">Posición</p>
-                <p className="text-white font-bold text-lg">{cromoNuevo.posicion}</p>
-              </div>
+{mostrarAnimacion && cromoNuevo && (
+  <AbrirSobreAnimado
+    cromo={cromoNuevo}
+    onClose={() => {
+      setMostrarAnimacion(false);
+      setCromoNuevo(null);
+    }}
+    onContinue={() => {
+      setMostrarAnimacion(false);
+      setCromoNuevo(null);
+    }}
+  />
+)}
 
-              <div className="bg-gray-800 p-4 rounded-lg mb-4">
-                <p className="text-gray-400 text-sm mb-1">Equipos</p>
-                <p className="text-white text-sm">{cromoNuevo.equipos.join(" • ")}</p>
-              </div>
-
-              {cromoNuevo.mundiales > 0 && (
-                <div className="bg-yellow-900/30 p-4 rounded-lg mb-4">
-                  <p className="text-yellow-400 font-bold flex items-center justify-center gap-2">
-                    <Trophy size={20} />
-                    {cromoNuevo.mundiales} {cromoNuevo.mundiales > 1 ? 'Mundiales' : 'Mundial'}
-                  </p>
-                </div>
-              )}
-
-              <button
-                onClick={() => setCromoNuevo(null)}
-                className="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-3 rounded-lg transition"
-              >
-                Continuar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL: VISTA AMPLIADA DEL CROMO CON IMAGEN PIXEL ART GRANDE */}
-      {vistaAmpliada && cromoSeleccionado && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/95 z-50 p-4">
-          <div className="relative bg-gradient-to-b from-gray-900 to-black rounded-2xl max-w-lg w-full border-4 border-yellow-500 shadow-2xl overflow-hidden">
             
-            {/* Botón cerrar */}
-            <button
-              onClick={() => {
-                setVistaAmpliada(false);
-                setCromoSeleccionado(null);
-              }}
-              className="absolute top-4 right-4 z-10 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 transition"
-            >
-              <X size={24} />
-            </button>
-
-            {/* Botones de navegación */}
-            <button
-              onClick={() => navegarCromo('prev')}
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-yellow-500 hover:bg-yellow-400 text-black rounded-full p-2 transition"
-            >
-              <ChevronLeft size={24} />
-            </button>
-
-            <button
-              onClick={() => navegarCromo('next')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-yellow-500 hover:bg-yellow-400 text-black rounded-full p-2 transition"
-            >
-              <ChevronRight size={24} />
-            </button>
-
-            <div className="p-6">
-              {/* IMAGEN PIXEL ART GRANDE - AQUÍ IRÁ TU IMAGEN 
-              <div className="bg-gradient-to-b from-sky-400 to-sky-600 rounded-xl p-8 mb-4 flex items-center justify-center min-h-[300px]">
-                */}<div className="text-center">
-                {/* IMAGEN PIXEL ART GRANDE */}
-                  <div className="rounded-xl p-8 mb-4 flex items-center justify-center min-h-[300px]">
-                        <img 
-                              src={cromoSeleccionado.imagen}
-                              alt={cromoSeleccionado.nombre}
-                              className="w-full max-w-sm mx-auto object-contain"
-                        />
-                  </div> 
-                </div>
-
-              {/* Info del cromo */}
-              <div className="flex justify-between items-center mb-4">
-                <div className={`${RAREZA_STYLES[cromoSeleccionado.rareza].bg} text-white text-sm font-bold px-4 py-2 rounded-full`}>
-                  {RAREZA_STYLES[cromoSeleccionado.rareza].emoji} {RAREZA_STYLES[cromoSeleccionado.rareza].nombre}
-                </div>
-                <span className="text-gray-400 text-sm">
-                  Tienes: <span className="text-yellow-400 font-bold">x{coleccion[cromoSeleccionado.id]}</span>
-                </span>
-              </div>
-
-             {/*  <h2 className={`text-3xl font-bold ${RAREZA_STYLES[cromoSeleccionado.rareza].color} mb-2 text-center`}>
-                {cromoSeleccionado.nombre}
-              </h2>
-              <p className="text-xl text-gray-300 mb-4 text-center">{cromoSeleccionado.apodo}</p>
-*/}
-              {/* Toggle para ver detalles o solo imagen */}
-              <button
-                onClick={() => {
-                  setVistaAmpliada(false);
-                  // Abre el modal de detalles normal
-                }}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition mb-2 text-sm"
-              >
-                Más detalles
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* MODAL: DETALLE COMPLETO DE CROMO (versión antigua, se abre desde vista ampliada) */}
       {cromoSeleccionado && !vistaAmpliada && (
