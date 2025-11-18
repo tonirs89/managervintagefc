@@ -141,7 +141,8 @@ export default function AbrirSobreAnimado({ cromo, onClose, onContinue }) {
     alt={cromo.nombre}
     className="w-full h-full object-cover"  // ← Cambiar a object-cover
     style={{
-      imageRendering: 'pixelated'  // ← Para mantener el look pixel art
+      imageRendering: 'pixelated',  // ← Para mantener el look pixel art
+       transform: 'scaleX(-1)'  // ← espejo horizontal
     }}
   />
 </div>

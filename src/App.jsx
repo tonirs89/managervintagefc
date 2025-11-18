@@ -7,6 +7,8 @@ import Header from "./pages/Header";
 import QuizModal from "./components/QuizModal";
 import { obtenerPreguntasAleatorias, puedeHacerQuiz as verificarQuiz } from "./data/preguntas";
 
+import TestSobre from "./pages/TestSobre";
+
 export default function App() {
   const [usuario, setUsuario] = useState(null);
   const [nombreUsuario, setNombreUsuario] = useState("");

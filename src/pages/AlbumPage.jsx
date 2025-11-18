@@ -5,7 +5,6 @@ import CromoCard from "../components/CromoCard";
 import { JUGADORES, obtenerCromoAleatorio, PUNTOS_DUPLICADO, RAREZA_STYLES, obtenerEstadisticas } from "../data/jugadores";
 import { Package, Coins, Trophy, TrendingUp, Brain, X, ChevronLeft, ChevronRight } from "lucide-react";
 import SobreCerrado from '../components/SobreCerrado';
-
 import AbrirSobreAnimado from '../components/AbrirSobreAnimado';
 
 export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPuntos, onProgresoChange }) {
@@ -18,46 +17,44 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
   const [cromoNuevo, setCromoNuevo] = useState(null);
   const [cromoSeleccionado, setCromoSeleccionado] = useState(null);
   const [mostrarEstadisticas, setMostrarEstadisticas] = useState(false);
-  const [vistaAmpliada, setVistaAmpliada] = useState(false); // NUEVO: para ver cromo en grande
+  const [vistaAmpliada, setVistaAmpliada] = useState(false);
   const [mostrarAnimacion, setMostrarAnimacion] = useState(false);
 
   // ============================================
-  // CARGAR PROGRESO DEL USUARIO (solo una vez)
+  // CARGAR PROGRESO DEL USUARIO
   // ============================================
- useEffect(() => {
-  if (!usuario) return;
-  
-  const datosGuardados = localStorage.getItem(`album_${usuario}`);
-  const ultimoLogin = localStorage.getItem(`ultimoLogin_${usuario}`);
-  const hoy = new Date().toDateString();
-  
-  if (datosGuardados) {
-    try {
-      const datos = JSON.parse(datosGuardados);
-      setColeccion(datos.coleccion || {});
-      setPuntos(datos.puntos || 0);
-      
-      // Dar sobre diario solo si es un nuevo día
-      if (ultimoLogin !== hoy) {
-        setSobres((datos.sobres || 0) + 1); // +1 sobre por login diario
-        localStorage.setItem(`ultimoLogin_${usuario}`, hoy);
-      } else {
-        setSobres(datos.sobres || 0); // Mismo día, no dar sobres
+  useEffect(() => {
+    if (!usuario) return;
+    
+    const datosGuardados = localStorage.getItem(`album_${usuario}`);
+    const ultimoLogin = localStorage.getItem(`ultimoLogin_${usuario}`);
+    const hoy = new Date().toDateString();
+    
+    if (datosGuardados) {
+      try {
+        const datos = JSON.parse(datosGuardados);
+        setColeccion(datos.coleccion || {});
+        setPuntos(datos.puntos || 0);
+        
+        if (ultimoLogin !== hoy) {
+          setSobres((datos.sobres || 0) + 1);
+          localStorage.setItem(`ultimoLogin_${usuario}`, hoy);
+        } else {
+          setSobres(datos.sobres || 0);
+        }
+      } catch (error) {
+        console.error("Error cargando progreso:", error);
       }
-    } catch (error) {
-      console.error("Error cargando progreso:", error);
+    } else {
+      setSobres(3);
+      localStorage.setItem(`ultimoLogin_${usuario}`, hoy);
     }
-  } else {
-    // Usuario nuevo: dar 3 sobres iniciales
-    setSobres(3);
-    localStorage.setItem(`ultimoLogin_${usuario}`, hoy);
-  }
-  
-  setCargado(true);
-}, [usuario]);
+    
+    setCargado(true);
+  }, [usuario]);
 
   // ============================================
-  // GUARDAR PROGRESO (cada vez que cambia algo)
+  // GUARDAR PROGRESO
   // ============================================
   useEffect(() => {
     if (!cargado || !usuario) return;
@@ -68,7 +65,6 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
       puntos
     }));
 
-    // Notificar progreso al componente padre
     const stats = obtenerEstadisticas(coleccion);
     onProgresoChange && onProgresoChange(stats.progreso);
   }, [coleccion, sobres, puntos, usuario, cargado]);
@@ -77,41 +73,35 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
   // FUNCIÓN: ABRIR SOBRE
   // ============================================
   const abrirSobre = () => {
-  if (sobres <= 0) {
-    alert("❌ No tienes sobres disponibles...");
-    return;
-  }
+    if (sobres <= 0) {
+      alert("❌ No tienes sobres disponibles...");
+      return;
+    }
 
-  // Obtener cromo aleatorio
-  const cromo = obtenerCromoAleatorio();
-  
-  // Actualizar colección
-  const nuevaColeccion = { ...coleccion };
-  const cantidadActual = nuevaColeccion[cromo.id] || 0;
-  nuevaColeccion[cromo.id] = cantidadActual + 1;
-  
-  // Si es duplicado, dar puntos
-  let puntosGanados = 0;
-  if (cantidadActual > 0) {
-    puntosGanados = PUNTOS_DUPLICADO[cromo.rareza];
-    setPuntos(puntos + puntosGanados);
-  }
-  
-  // Actualizar estados
-  setColeccion(nuevaColeccion);
-  setSobres(sobres - 1);
-  setCromoNuevo({ 
-    ...cromo, 
-    esDuplicado: cantidadActual > 0,
-    puntosGanados 
-  });
-  
-  // MOSTRAR ANIMACIÓN en lugar de setAbriendoSobre
-  setMostrarAnimacion(true);
-};
+    const cromo = obtenerCromoAleatorio();
+    const nuevaColeccion = { ...coleccion };
+    const cantidadActual = nuevaColeccion[cromo.id] || 0;
+    nuevaColeccion[cromo.id] = cantidadActual + 1;
+    
+    let puntosGanados = 0;
+    if (cantidadActual > 0) {
+      puntosGanados = PUNTOS_DUPLICADO[cromo.rareza];
+      setPuntos(puntos + puntosGanados);
+    }
+    
+    setColeccion(nuevaColeccion);
+    setSobres(sobres - 1);
+    setCromoNuevo({ 
+      ...cromo, 
+      esDuplicado: cantidadActual > 0,
+      puntosGanados 
+    });
+    
+    setMostrarAnimacion(true);
+  };
 
   // ============================================
-  // FUNCIÓN: COMPRAR SOBRE CON PUNTOS
+  // FUNCIÓN: COMPRAR SOBRE
   // ============================================
   const comprarSobre = () => {
     const COSTE_SOBRE = 500;
@@ -127,7 +117,7 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
   };
 
   // ============================================
-  // FUNCIÓN: NAVEGAR ENTRE CROMOS EN VISTA AMPLIADA
+  // FUNCIÓN: NAVEGAR CROMOS
   // ============================================
   const navegarCromo = (direccion) => {
     const jugadoresConCromo = JUGADORES.filter(j => coleccion[j.id] > 0);
@@ -147,10 +137,8 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
   // FUNCIÓN: ABRIR VISTA AMPLIADA
   // ============================================
   const abrirVistaAmpliada = (jugador) => {
-    if (coleccion[jugador.id]) {
-      setCromoSeleccionado(jugador);
-      setVistaAmpliada(true);
-    }
+    setCromoSeleccionado(jugador);
+    setVistaAmpliada(true);
   };
 
   // ============================================
@@ -165,7 +153,6 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
     );
   }
 
-  // Obtener estadísticas
   const stats = obtenerEstadisticas(coleccion);
 
   // ============================================
@@ -174,9 +161,8 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
   return (
     <div className="min-h-screen pt-[200px] md:pt-48 pb-12 max-w-[1400px] mx-auto px-3 md:px-8">
       
-      {/* CONTROLES SUPERIORES - MEJORADOS PARA MOBILE */}
+      {/* CONTROLES SUPERIORES */}
       <div className="grid grid-cols-3 gap-2 md:flex md:gap-4 md:justify-center mb-4">
-        {/* Botón abrir sobre */}
         <button
           onClick={abrirSobre}
           disabled={sobres === 0}
@@ -191,7 +177,6 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
           </span>
         </button>
 
-        {/* Botón comprar sobre */}
         <button
           onClick={comprarSobre}
           className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 bg-purple-600 hover:bg-purple-700 text-white px-3 md:px-6 py-2 md:py-3 rounded-lg font-bold text-sm md:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
@@ -200,7 +185,6 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
           <span className="text-xs md:text-base">Comprar</span>
         </button>
 
-        {/* Botón estadísticas */}
         <button
           onClick={() => setMostrarEstadisticas(true)}
           className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-6 py-2 md:py-3 rounded-lg font-bold text-sm md:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
@@ -210,7 +194,7 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
         </button>
       </div>
 
-      {/* INDICADOR DE PROGRESO RÁPIDO */}
+      {/* INDICADOR DE PROGRESO */}
       <div className="bg-gray-900 rounded-xl p-4 mb-8 border-2 border-yellow-500">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -222,18 +206,6 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
           <span className="text-yellow-400 font-bold text-xl">{stats.progreso}%</span>
         </div>
       </div>
-
-      {/* ANIMACIÓN "ABRIENDO SOBRE..." */}
-      {abriendoSobre && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/90 z-50">
-          <div className="text-center">
-            <div className="w-24 h-24 border-8 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4 mx-auto"></div>
-            <p className="text-3xl font-bold text-yellow-400 animate-pulse">
-              Abriendo sobre...
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* CUADRÍCULA DE CROMOS */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8 justify-items-center mt-8">
@@ -247,25 +219,80 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
         ))}
       </div>
 
-              {/* REEMPLAZAR el modal de "CROMO NUEVO" por esto: */}
+      {/* MODAL: ANIMACIÓN ABRIR SOBRE */}
+      {mostrarAnimacion && cromoNuevo && (
+        <AbrirSobreAnimado
+          cromo={cromoNuevo}
+          onClose={() => {
+            setMostrarAnimacion(false);
+            setCromoNuevo(null);
+          }}
+          onContinue={() => {
+            setMostrarAnimacion(false);
+            setCromoNuevo(null);
+          }}
+        />
+      )}
 
-{mostrarAnimacion && cromoNuevo && (
-  <AbrirSobreAnimado
-    cromo={cromoNuevo}
-    onClose={() => {
-      setMostrarAnimacion(false);
-      setCromoNuevo(null);
-    }}
-    onContinue={() => {
-      setMostrarAnimacion(false);
-      setCromoNuevo(null);
-    }}
-  />
-)}
-
+      {/* MODAL: VISTA AMPLIADA (IMAGEN GRANDE) */}
+      {vistaAmpliada && cromoSeleccionado && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/95 z-50 p-4">
+          <div className="relative bg-gradient-to-b from-gray-900 to-black rounded-2xl max-w-lg w-full border-4 border-yellow-500 shadow-2xl overflow-hidden">
             
+            <button
+              onClick={() => {
+                setVistaAmpliada(false);
+                setCromoSeleccionado(null);
+              }}
+              className="absolute top-4 right-4 z-10 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 transition"
+            >
+              <X size={24} />
+            </button>
 
-      {/* MODAL: DETALLE COMPLETO DE CROMO (versión antigua, se abre desde vista ampliada) */}
+            <button
+              onClick={() => navegarCromo('prev')}
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-yellow-500 hover:bg-yellow-400 text-black rounded-full p-2 transition"
+            >
+              <ChevronLeft size={24} />
+            </button>
+
+            <button
+              onClick={() => navegarCromo('next')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-yellow-500 hover:bg-yellow-400 text-black rounded-full p-2 transition"
+            >
+              <ChevronRight size={24} />
+            </button>
+
+            <div className="p-6">
+              <div className="rounded-xl p-8 mb-4 flex items-center justify-center min-h-[300px]">
+                <img 
+                  src={cromoSeleccionado.imagen}
+                  alt={cromoSeleccionado.nombre}
+                  className="w-full max-w-sm mx-auto object-contain"
+                />
+              </div>
+
+              <div className="flex justify-between items-center mb-4">
+                <div className={`${RAREZA_STYLES[cromoSeleccionado.rareza].bg} text-white text-sm font-bold px-4 py-2 rounded-full`}>
+                  {RAREZA_STYLES[cromoSeleccionado.rareza].emoji} {RAREZA_STYLES[cromoSeleccionado.rareza].nombre}
+                </div>
+                <span className="text-gray-400 text-sm">
+                  Tienes: <span className="text-yellow-400 font-bold">x{coleccion[cromoSeleccionado.id]}</span>
+                </span>
+              </div>
+
+              <button
+                onClick={() => setVistaAmpliada(false)}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition text-sm"
+              >
+                Más detalles
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: DETALLE COMPLETO */}
       {cromoSeleccionado && !vistaAmpliada && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/90 z-50 p-4">
           <div className="bg-gradient-to-b from-gray-900 to-black rounded-2xl max-w-md w-full border-4 border-yellow-500 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
@@ -317,9 +344,7 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
 
               <div className="space-y-2">
                 <button
-                  onClick={() => {
-                    setVistaAmpliada(true);
-                  }}
+                  onClick={() => setVistaAmpliada(true)}
                   className="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-3 rounded-lg transition"
                 >
                   Volver
@@ -345,7 +370,6 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
             </div>
 
             <div className="p-6">
-              {/* Progreso general */}
               <div className="bg-gray-800 p-6 rounded-lg mb-6 text-center">
                 <p className="text-gray-400 mb-2">Progreso Total</p>
                 <p className="text-5xl font-bold text-yellow-400 mb-2">{stats.progreso}%</p>
@@ -354,7 +378,6 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
                 </p>
               </div>
 
-              {/* Por rareza */}
               <div className="grid grid-cols-2 gap-4 mb-6">
                 {Object.entries(stats.porRareza).map(([rareza, datos]) => (
                   <div key={rareza} className="bg-gray-800 p-4 rounded-lg">
@@ -377,7 +400,6 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
                 ))}
               </div>
 
-              {/* Recursos actuales */}
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="bg-gray-800 p-4 rounded-lg text-center">
                   <Package className="text-yellow-400 mx-auto mb-2" size={32} />
@@ -404,3 +426,15 @@ export default function AlbumPage({ usuario, sobres, setSobres, puntos, setPunto
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
