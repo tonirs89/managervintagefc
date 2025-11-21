@@ -224,7 +224,7 @@ export const JUGADORES = [
     mundiales: 1,
     logro: "3 Champions",
     rareza: "rara",
-    imagen: "/cromos/robertocarlos.png"
+    imagen: "/cromos/robertocarlos.PNG"
   },
   {
     id: 18,
@@ -236,7 +236,7 @@ export const JUGADORES = [
     mundiales: 0,
     logro: "Magia y elegancia",
     rareza: "rara",
-    imagen: "/cromos/aimar.png"
+    imagen: "/cromos/aimar.PNG"
   },
   {
     id: 19,

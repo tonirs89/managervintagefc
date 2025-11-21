@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X, CheckCircle, XCircle, Trophy, Package } from "lucide-react";
 import { calcularSobresGanados } from "../data/preguntas";
+import CuentaAtras from "./CuentaAtras";
 
 export default function QuizModal({ preguntas, onComplete, onClose }) {
   const [preguntaActual, setPreguntaActual] = useState(0);
@@ -10,6 +11,8 @@ export default function QuizModal({ preguntas, onComplete, onClose }) {
   const [correctas, setCorrectas] = useState(0);
   const [mostrarResultado, setMostrarResultado] = useState(false);
   const [mostrarFinal, setMostrarFinal] = useState(false);
+
+  
 
   // Verificar que tenemos preguntas
   if (!preguntas || preguntas.length === 0) {
@@ -55,6 +58,17 @@ export default function QuizModal({ preguntas, onComplete, onClose }) {
       }
     }, 1500);
   };
+
+  //AGOTA EL TIEMPO DE RESPUESTA
+  const manejarTiempoAgotado = () => {
+    if (preguntaActual === 4) {
+        // Quiz terminado
+        setMostrarFinal(true);
+    } else {
+    setRespuestaSeleccionada(null);
+    setPreguntaActual(preguntaActual + 1);
+    }
+  }
 
   // ============================================
   // FINALIZAR QUIZ
@@ -182,9 +196,12 @@ export default function QuizModal({ preguntas, onComplete, onClose }) {
         {/* Contenido */}
         <div className="p-6">
           {/* Pregunta */}
-          <h3 className="text-white text-xl md:text-2xl font-bold mb-6 leading-tight">
+          
+          <h3 className="text-white text-xl md:text-2xl font-bold mb-1 leading-tight">
             {pregunta.pregunta}
           </h3>
+          <h2 class="text-right text-yellow-500 text-xl mb-3" >
+          <CuentaAtras preguntaActual={preguntaActual} manejarTiempoAgotado={manejarTiempoAgotado} /></h2> {/*añado contador */}
 
           {/* Respuestas (CORREGIDO: usar opciones) */}
           <div className="space-y-3">
